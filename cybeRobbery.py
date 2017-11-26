@@ -14,7 +14,7 @@ def main_menu():
     os.system("clear")
     print(15 * "-", " Menu ", 15 * "-")
     print("1. Play Game")
-    print("2. Option 2")
+    print("2. Options")
     print("3. Exit")
     print(38 * "-")
 
