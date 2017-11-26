@@ -26,6 +26,8 @@ def main_game():
     game_heat = heat
     game_intel = intel
 
+    game_inventory = []
+
     game_server_security = server_security
 
     game_intel_price = intel_price

@@ -2,6 +2,7 @@
 money = 200
 heat = 0
 intel = 1
+inventory = []
 
 # GAME WORLD
 server_security = 100
