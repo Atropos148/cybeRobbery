@@ -102,7 +102,7 @@ def main_game():
 
             # ATTACK SERVER FARM
             elif game_choice == 4:
-                game_server_security += (game_heat/2)
+                game_server_security += (game_heat / 2)
 
                 if (game_server_security - game_intel) <= 50:
 
