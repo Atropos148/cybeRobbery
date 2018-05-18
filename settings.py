@@ -1,12 +1,18 @@
-# PLAYER
-money = 200
-heat = 0
-intel = 1
-inventory = []
+class Player:
+    def __init__(self, name, money, heat, intel, inventory):
+        self.name = name
+        self.money = money
+        self.heat = heat
+        self.intel = intel
+        self.inventory = inventory
 
-# GAME WORLD
-server_security = 100
 
-# STORE
-intel_price = 500
-intel_store = 30
+class World:
+    def __init__(self, server_security):
+        self.server_security = server_security
+
+
+class Store:
+    def __init__(self, intel_price, intel_amount):
+        self.intel_price = intel_price
+        self.intel_amount = intel_amount
