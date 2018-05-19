@@ -80,7 +80,7 @@ class Player:
 
     def go_shopping(self, store):
 
-        shopping_result = store.sell_items(store.show_items(), self.money, self.intel)
+        shopping_result = store.sell_items(store.show_items(), self.money, self.intel, self.inventory)
         self.money = shopping_result[0]
         self.intel = shopping_result[1]
 
@@ -91,8 +91,9 @@ class ServerFarm:
 
 
 class Store:
-    def __init__(self, items_dict):
+    def __init__(self, items_dict, type_of_store):
         self.items_dict = items_dict
+        self.type_of_store = type_of_store
 
     def show_items(self):
         i = 0
@@ -104,16 +105,33 @@ class Store:
             print('{}. Buy {} {} for {}'.format(
                 i, curr_item['amount'], curr_item['name'], curr_item['price']))
 
+        print('9. Leave')
+
         return id_dict
 
-    def sell_items(self, id_dict, player_money, player_intel):
+    def sell_items(self, id_dict, player_money, player_intel, player_inventory):
         choice = int(input('What do  you want to buy?(1) '))
-        item = id_dict[choice]
-        if player_money < int(self.items_dict[item]['price']):
-            print('You dont have enough money to buy {}'.format(self.items_dict[item]['name']))
-        else:
-            player_money -= int(self.items_dict[item]['price'])
-            player_intel += int(self.items_dict[item]['amount'])
-            print('You bought {}'.format(self.items_dict[item]['name']))
+        if choice != 9:
+            # item in current shop list
+            item = id_dict[choice]
 
-        return player_money, player_intel
+            # item in overall possible items shop inventory
+            chosen_item = self.items_dict[item]
+            # print(type(self.items_dict[item]), self.items_dict[item])
+            if player_money < int(chosen_item['price']):
+                print('You dont have enough money to buy {}'.format(chosen_item['name']))
+            else:
+                if self.type_of_store == 'intel':
+                    player_money -= int(chosen_item['price'])
+                    player_intel += int(chosen_item['amount'])
+                    print('You bought {}'.format(chosen_item['name']))
+
+                elif self.type_of_store == 'weapon':
+                    player_money -= int(chosen_item['price'])
+                    player_inventory[chosen_item['name']] = chosen_item
+                    print('You bought {}'.format(chosen_item['name']))
+
+            return player_money, player_intel, player_inventory
+
+        else:
+            return player_money, player_intel, player_inventory

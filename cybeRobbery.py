@@ -12,7 +12,7 @@ def setup():
         money=200,
         heat=0,
         intel=1,
-        inventory=[],
+        inventory={},
     )
 
     server_farm = ServerFarm(
@@ -20,13 +20,18 @@ def setup():
     )
 
     intel_store = Store(
-        items_dict={'intel_big': {'name': 'Intel', 'amount': '30', 'price': '500'},
-                    }
-        # intel_price=500,
-        # intel_amount=30,
+        items_dict={'intel_big': {'name': 'Intel', 'amount': 30, 'price': 500},
+                    },
+        type_of_store='intel'
     )
 
-    return [player, server_farm, intel_store]
+    weapon_store = Store(
+        items_dict={'pistol': {'name': 'Glock 17', 'amount': 1, 'attack': 3, 'price': 200},
+                    },
+        type_of_store='weapon'
+    )
+
+    return [player, server_farm, intel_store, weapon_store]
 
 
 def main_menu():
@@ -55,12 +60,13 @@ def main_menu():
 
 
 def main_game(setup_list):
-    # TODO: ADD INVENTORY, GEAR, MERCS
+    # TODO: ADD GEAR, MERCS
     # TODO: ADD Name Choice
 
     player = setup_list[0]
     server_farm = setup_list[1]
     intel_store = setup_list[2]
+    weapon_store = setup_list[3]
 
     game_loop = True
     while game_loop:
@@ -73,12 +79,14 @@ def main_game(setup_list):
 
         print(42 * "-")
         print("- {} credits ----- {} heat ----- {} intel -".format(player.money, player.heat, player.intel))
+        print('Inventory: {}'.format(player.inventory))
         print("1. Rob a store")
         print("2. Lay low")
         print("3. Gain intel")
         print("4. Attack server farm")
         print("5. Intel Store")
-        print("6. Exit")
+        print("6. Weapon Store")
+        print("7. Exit")
         print(42 * "-")
 
         try:
@@ -100,12 +108,16 @@ def main_game(setup_list):
             elif game_choice == 4:
                 player.attack_server_farm(server_farm)
 
-            # STORE
+            # INTEL STORE
             elif game_choice == 5:
                 player.go_shopping(intel_store)
 
-            # EXIT
+            # WEAPON STORE
             elif game_choice == 6:
+                player.go_shopping(weapon_store)
+
+            # EXIT
+            elif game_choice == 7:
                 game_loop = False
 
             else:
