@@ -79,27 +79,10 @@ class Player:
             print("Corp is breathing down your neck. Gain {} heat.".format(heat_change))
 
     def go_shopping(self, store):
-        print("1. Pay {} credits for {} intel".format(store.intel_price, store.intel_amount))
-        print("2. Leave shop")
 
-        try:
-            game_choice = int(input("Enter your choice [1-2]:"))
-            if self.money < store.intel_price:
-                print("You don't have enough money to buy anything.")
-                game_choice = 2
-
-            if game_choice == 1:
-
-                self.money -= store.intel_price
-                self.intel += store.intel_amount
-
-                print("The girl behind the counter sells you some juicy intel.")
-
-            elif game_choice == 2:
-                print("You leave without buying anything.")
-
-        except ValueError:
-            print("Only use numbers")
+        shopping_result = store.sell_items(store.show_items(), self.money, self.intel)
+        self.money = shopping_result[0]
+        self.intel = shopping_result[1]
 
 
 class ServerFarm:
@@ -108,6 +91,29 @@ class ServerFarm:
 
 
 class Store:
-    def __init__(self, intel_price, intel_amount):
-        self.intel_price = intel_price
-        self.intel_amount = intel_amount
+    def __init__(self, items_dict):
+        self.items_dict = items_dict
+
+    def show_items(self):
+        i = 0
+        id_dict = {}
+        for item in self.items_dict:
+            i += 1
+            curr_item = self.items_dict[item]
+            id_dict[i] = item
+            print('{}. Buy {} {} for {}'.format(
+                i, curr_item['amount'], curr_item['name'], curr_item['price']))
+
+        return id_dict
+
+    def sell_items(self, id_dict, player_money, player_intel):
+        choice = int(input('What do  you want to buy?(1) '))
+        item = id_dict[choice]
+        if player_money < int(self.items_dict[item]['price']):
+            print('You dont have enough money to buy {}'.format(self.items_dict[item]['name']))
+        else:
+            player_money -= int(self.items_dict[item]['price'])
+            player_intel += int(self.items_dict[item]['amount'])
+            print('You bought {}'.format(self.items_dict[item]['name']))
+
+        return player_money, player_intel

@@ -19,12 +19,14 @@ def setup():
         server_security=100,
     )
 
-    store = Store(
-        intel_price=500,
-        intel_amount=30,
+    intel_store = Store(
+        items_dict={'intel_big': {'name': 'Intel', 'amount': '30', 'price': '500'},
+                    }
+        # intel_price=500,
+        # intel_amount=30,
     )
 
-    return [player, server_farm, store]
+    return [player, server_farm, intel_store]
 
 
 def main_menu():
@@ -58,14 +60,14 @@ def main_game(setup_list):
 
     player = setup_list[0]
     server_farm = setup_list[1]
-    store = setup_list[2]
+    intel_store = setup_list[2]
 
     game_loop = True
     while game_loop:
 
         if player.heat > 100:
             print("You attracted too much heat. AugCops kicked down your door. Have fun in prison!")
-            game_loop = False
+            break
 
         input("Continue...")
 
@@ -75,7 +77,7 @@ def main_game(setup_list):
         print("2. Lay low")
         print("3. Gain intel")
         print("4. Attack server farm")
-        print("5. Store")
+        print("5. Intel Store")
         print("6. Exit")
         print(42 * "-")
 
@@ -100,7 +102,7 @@ def main_game(setup_list):
 
             # STORE
             elif game_choice == 5:
-                player.go_shopping(store)
+                player.go_shopping(intel_store)
 
             # EXIT
             elif game_choice == 6:
