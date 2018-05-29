@@ -9,7 +9,7 @@ def setup():
     player = Player(
         # name will be chosen by player later
         name='Joe',
-        money=200,
+        money=650,
         heat=0,
         intel=1,
         inventory={},
@@ -20,18 +20,41 @@ def setup():
     )
 
     intel_store = Store(
-        items_dict={'intel_big': {'name': 'Intel', 'amount': 30, 'price': 500},
-                    },
+        items_dict_start={'intel_big': {'name': 'Intel', 'amount': 30, 'price': 500},
+                          },
         type_of_store='intel'
     )
 
     weapon_store = Store(
-        items_dict={'pistol': {'name': 'Glock 17', 'amount': 1, 'attack': 3, 'price': 200},
-                    },
+        items_dict_start={'pistol': {'name': 'Glock 17', 'amount': 1, 'attack': 3, 'price': 200},
+                          'shotgun': {'name': 'Remington 870', 'amount': 1, 'attack': 6, 'price': 450}
+                          },
         type_of_store='weapon'
     )
 
     return [player, server_farm, intel_store, weapon_store]
+
+
+def show_choices(player):
+    print(38 * "-")
+    print("- {} credits --- {} heat --- {} intel -".format(player.money, player.heat, player.intel))
+    print('Inventory:', end='')
+    for item in player.inventory:
+        # print(player.inventory[item]['amount'], end='')
+        if player.inventory[item]['amount'] > 1:
+            print(' {}'.format(item['amount']), item + ',', end='')
+        else:
+            print(' ', item + ',', end='')
+    print()
+    print(38 * "-")
+    print("1. Rob a store")
+    print("2. Lay low")
+    print("3. Gain intel")
+    print("4. Attack server farm")
+    print("5. Intel Store")
+    print("6. Weapon Store")
+    print("7. Exit")
+    print(38 * "-")
 
 
 def main_menu():
@@ -77,20 +100,10 @@ def main_game(setup_list):
 
         input("Continue...")
 
-        print(42 * "-")
-        print("- {} credits ----- {} heat ----- {} intel -".format(player.money, player.heat, player.intel))
-        print('Inventory: {}'.format(player.inventory))
-        print("1. Rob a store")
-        print("2. Lay low")
-        print("3. Gain intel")
-        print("4. Attack server farm")
-        print("5. Intel Store")
-        print("6. Weapon Store")
-        print("7. Exit")
-        print(42 * "-")
+        show_choices(player)
 
         try:
-            game_choice = int(input("Enter your choice [1-2]:"))
+            game_choice = int(input("Enter your choice [1-7]:"))
 
             # ROB A STORE
             if game_choice == 1:
@@ -98,7 +111,9 @@ def main_game(setup_list):
 
             # LAY LOW
             elif game_choice == 2:
-                player.lay_low()
+                # TODO: Write dynamic store_list
+                store_list = [weapon_store, intel_store]
+                player.lay_low(store_list)
 
             # GAIN INTEL
             elif game_choice == 3:
