@@ -42,7 +42,7 @@ class Player:
 
         heat_change_effect_check = \
             'You lay low for a week. You lost some heat.' if self.heat > 0 \
-            else 'You chill with some friends for a week.'
+                else 'You chill with some friends for a week.'
 
         print(heat_change_effect_check)
 

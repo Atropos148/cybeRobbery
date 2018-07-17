@@ -3,7 +3,6 @@
 # made by @atropos148
 
 from settings import *
-import tkinter as tk
 
 
 def setup():
@@ -57,7 +56,7 @@ def show_choices(player):
     print("7. Exit")
     print(38 * "-")
 
-'''
+
 def main_menu():
     loop = True
     while loop:
@@ -81,7 +80,6 @@ def main_menu():
 
         except ValueError:
             print("Only type numbers [1-3] to choose\n")
-'''
 
 
 def main_game(setup_list):
@@ -100,7 +98,7 @@ def main_game(setup_list):
             print("You attracted too much heat. AugCops kicked down your door. Have fun in prison!")
             break
 
-        # input("Continue...")
+        input("Continue...")
 
         show_choices(player)
 
@@ -145,76 +143,8 @@ def main_game(setup_list):
 
 
 def main():
-    main_game(setup())
-
-
-def main_menu_tk():
-    # TKinter
-    main_menu = tk.Tk()
-    frame = tk.Frame(main_menu)
-    frame.pack()
-
-    menu_top = 15 * "-", " Menu ", 15 * "-"
-    menu_play = "1. Play Game"
-    menu_options = "2. Options"
-    menu_exit = "3. Exit"
-
-    window = tk.Label(text="cyberRobbery")
-    window.pack(side=tk.TOP)
-    window = tk.Label(text=menu_top)
-    window.pack(side=tk.TOP)
-
-    # PLAY
-    button = tk.Button(
-        frame,
-        text=menu_play,
-        command=main)
-    button.pack()
-
-    # OPTIONS
-    button = tk.Button(
-        frame,
-        text=menu_options)
-    button.pack()
-
-    # EXIT
-    button = tk.Button(
-        frame,
-        text=menu_exit,
-        command=quit)
-    button.pack()
-
-    main_menu.mainloop()
-
-
-def main_game_tk():
-    main_menu = tk.Tk()
-    frame = tk.Frame(main_menu)
-    frame.pack()
-
-    rob_text = "Rob a store"
-    lay_text = "Lay low"
-    intel_text = "Gain intel"
-
-    rob_button = tk.Button(
-        frame,
-        text=rob_text,
-        command=main)
-    rob_button.pack()
-
-    lay_button = tk.Button(
-        frame,
-        text=lay_text,
-        command=main)
-    lay_button.pack()
-
-    intel_button = tk.Button(
-        frame,
-        text=intel_text,
-        command=main)
-    intel_button.pack()
+    main_menu()
 
 
 if __name__ == "__main__":
-    main_menu_tk()
-    # main()
+    main()
