@@ -57,6 +57,7 @@ def show_choices(player):
     print("7. Exit")
     print(38 * "-")
 
+
 '''
 def main_menu():
     loop = True
@@ -114,8 +115,8 @@ def main_game(setup_list):
             # LAY LOW
             elif game_choice == 2:
                 # TODO: Write dynamic store_list
-                store_list = [weapon_store, intel_store]
-                player.lay_low(store_list)
+                # store_list = [weapon_store, intel_store]
+                player.lay_low()
 
             # GAIN INTEL
             elif game_choice == 3:
@@ -151,8 +152,7 @@ def main():
 def main_menu_tk():
     # TKinter
     main_menu = tk.Tk()
-    frame = tk.Frame(main_menu)
-    frame.pack()
+    main_menu.geometry('400x400')
 
     menu_top = 15 * "-", " Menu ", 15 * "-"
     menu_play = "1. Play Game"
@@ -160,61 +160,83 @@ def main_menu_tk():
     menu_exit = "3. Exit"
 
     window = tk.Label(text="cyberRobbery")
-    window.pack(side=tk.TOP)
+    window.grid(column=1, row=0)
     window = tk.Label(text=menu_top)
-    window.pack(side=tk.TOP)
+    window.grid(column=1, row=1)
 
     # PLAY
     button = tk.Button(
-        frame,
+        main_menu,
         text=menu_play,
-        command=main)
-    button.pack()
+        command=lambda: main_game_tk(main_menu))
+    button.grid(column=1, row=2)
 
     # OPTIONS
     button = tk.Button(
-        frame,
+        main_menu,
         text=menu_options)
-    button.pack()
+    button.grid(column=1, row=3)
 
     # EXIT
     button = tk.Button(
-        frame,
+        main_menu,
         text=menu_exit,
         command=quit)
-    button.pack()
+    button.grid(column=1, row=4)
 
     main_menu.mainloop()
 
 
-def main_game_tk():
-    main_menu = tk.Tk()
-    frame = tk.Frame(main_menu)
-    frame.pack()
+def main_game_tk(window):
+    setup_list = setup()
+    player = setup_list[0]
+    server_farm = setup_list[1]
+    intel_store = setup_list[2]
+    weapon_store = setup_list[3]
+
+    if player.heat > 100:
+        print("You attracted too much heat. AugCops kicked down your door. Have fun in prison!")
+        quit()
+
+    main_game_window = window
+    main_game_window.geometry('400x400')
 
     rob_text = "Rob a store"
     lay_text = "Lay low"
     intel_text = "Gain intel"
+    inv_text = "Inventory:"
+
+    label = tk.Label(main_game_window, text=inv_text)
+    label.grid(column=1, row=0)
+
+    info_text = tk.StringVar()
+    info_text.set("- {} credits --- {} heat --- {} intel -".format(player.money, player.heat, player.intel))
+
+    info_label = tk.Label(main_game_window, textvariable=info_text)
+    info_label.grid(column=1, row=1)
 
     rob_button = tk.Button(
-        frame,
+        main_game_window,
         text=rob_text,
-        command=main)
-    rob_button.pack()
+        command=player.rob_a_store)
+    rob_button.grid(column=1, row=2)
 
     lay_button = tk.Button(
-        frame,
+        main_game_window,
         text=lay_text,
-        command=main)
-    lay_button.pack()
+        command=player.lay_low)
+    lay_button.grid(column=1, row=3)
 
     intel_button = tk.Button(
-        frame,
+        main_game_window,
         text=intel_text,
-        command=main)
-    intel_button.pack()
+        command=player.gain_intel)
+    intel_button.grid(column=1, row=4)
+
+    main_game_window.mainloop()
 
 
 if __name__ == "__main__":
     main_menu_tk()
     # main()
+

@@ -30,8 +30,8 @@ class Player:
         stolen_money_check = stolen_money if stolen_money > 0 else 'no'
         print("You got {} credits.".format(stolen_money_check))
 
-    def lay_low(self, store_list):
-        self.restock_stores(store_list)
+    def lay_low(self, ):
+        # self.restock_stores(store_list)
 
         heat_change = randint(3, 15)
 
