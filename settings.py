@@ -13,6 +13,7 @@ class Player:
     @staticmethod
     def restock_stores(store_list):
         for store in store_list:
+            store.items_dict.clear()
             store.items_dict = copy.deepcopy(store.items_dict_start)
 
     def rob_a_store(self):
@@ -42,7 +43,7 @@ class Player:
 
         heat_change_effect_check = \
             'You lay low for a week. You lost some heat.' if self.heat > 0 \
-                else 'You chill with some friends for a week.'
+            else 'You chill with some friends for a week.'
 
         print(heat_change_effect_check)
 
@@ -98,7 +99,6 @@ class Player:
 
         store_dict = store.build_id_dict()
         store.show_items(store_dict, store.items_dict)
-
         store.sell_items(store_dict, store.items_dict, self)
 
 
@@ -126,9 +126,9 @@ class Store:
         for item in id_dict:
             curr_item = items_dict[id_dict[item]]
 
-            amount_check = curr_item['amount'] if curr_item['amount'] > 1 else 'a'
-            print('{}. Buy {} {} for {}'.format(
-                item, amount_check, curr_item['name'], curr_item['price']))
+            # amount_check = curr_item['amount'] if curr_item['amount'] > 1 else 'a'
+            print('{}. Buy {} for {}'.format(
+                item, curr_item.name, curr_item.price))
 
         print('9. Leave')
 
@@ -144,31 +144,58 @@ class Store:
                 # in a list of all items in shop, choose the item player selected
                 chosen_item = items_dict[id_dict[choice]]
 
-                if player.money < int(chosen_item['price']):
-                    print("You don't have enough money to buy {}".format(chosen_item['name']))
+                if player.money < int(chosen_item.price):
+                    print("You don't have enough money to buy {}".format(chosen_item.name))
 
                 else:
                     if self.type_of_store == 'intel':
-                        player.money -= int(chosen_item['price'])
-                        player.intel += int(chosen_item['amount'])
+                        player.money -= int(chosen_item.price)
+                        player.intel += int(chosen_item.intel_amount)
                         # print('You bought {}'.format(chosen_item['name']))
 
                     elif self.type_of_store == 'weapon':
-                        player.money -= int(chosen_item['price'])
-
+                        player.money -= int(chosen_item.price)
+                        """"
                         if chosen_item['name'] in player.inventory:
+                            # TODO: Fix KeyError
                             player.inventory[chosen_item['amount']] += 1
 
                         else:
                             player.inventory[chosen_item['name']] = chosen_item
+                        """
+                        player.inventory[chosen_item.name] = chosen_item
 
                         # print('You bought {}'.format(chosen_item['name']))
                         del items_dict[id_dict[choice]]
 
-                    print('You bought {}'.format(chosen_item['name']))
+                    print('You bought {}'.format(chosen_item.name))
 
             else:
                 print('Wrong numbesdadasdr')
 
         except KeyError:
             print(KeyError)
+
+
+class Item:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+
+    def getname(self):
+        return self.name
+
+
+class Weapon(Item):
+    def __init__(self, name, price, attack):
+        Item.__init__(self, name, price)
+        self.attack = attack
+
+    def getname(self):
+        return self.name
+
+
+class Intel(Item):
+    def __init__(self, name, price, intel_amount):
+        Item.__init__(self, name, price)
+        self.intel_amount = intel_amount

@@ -19,16 +19,18 @@ def setup():
         server_security=100,
     )
 
+    intel_big = Intel('E-Mails', 400, 30)
+
     intel_store = Store(
-        items_dict_start={'intel_big': {'name': 'Intel', 'amount': 30, 'price': 500},
-                          },
+        items_dict_start={0: intel_big},
         type_of_store='intel'
     )
 
+    glock = Weapon('Glock 17', 200, 3)
+    shotgun = Weapon('Remington 870', 450, 6)
+
     weapon_store = Store(
-        items_dict_start={'pistol': {'name': 'Glock 17', 'amount': 1, 'attack': 3, 'price': 200},
-                          'shotgun': {'name': 'Remington 870', 'amount': 1, 'attack': 6, 'price': 450}
-                          },
+        items_dict_start={0: glock, 1: shotgun},
         type_of_store='weapon'
     )
 
@@ -41,10 +43,14 @@ def show_choices(player):
     print('Inventory:', end='')
     for item in player.inventory:
         # print(player.inventory[item]['amount'], end='')
+        ''''
         if player.inventory[item]['amount'] > 1:
             print(' {}'.format(item['amount']), item + ',', end='')
         else:
             print(' ', item + ',', end='')
+        '''
+        print(' ', item + ',', end='')
+
     print()
     print(38 * "-")
     print("1. Rob a store")
@@ -139,7 +145,7 @@ def main_game(setup_list):
                 raise ValueError("Only type numbers")
 
         except ValueError:
-            print("Only use numbers")
+            print("ValueError: Only use numbers")
 
 
 def main():
