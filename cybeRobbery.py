@@ -15,87 +15,60 @@ def setup():
         inventory={},
     )
 
-    server_farm = ServerFarm(
-        server_security=100,
-    )
+    server_farm = ServerFarm(100, 'Sweigart Consortium')
 
     intel_big = Intel('E-Mails', 400, 30)
 
-    intel_store = Store(
-        items_dict_start={0: intel_big},
-        type_of_store='intel'
-    )
+    intel_dict_start = {0: intel_big}
+    intel_store = IntelStore(intel_dict_start, player)
 
     glock = Weapon('Glock 17', 200, 3)
     shotgun = Weapon('Remington 870', 450, 6)
+    go_back = Item('Go Back', 0)
+    items_dict_start = {0: glock, 1: shotgun, 9: go_back}
 
-    weapon_store = Store(
-        items_dict_start={0: glock, 1: shotgun},
-        type_of_store='weapon'
-    )
+    weapon_store = WeaponStore(items_dict_start, player)
 
     return [player, server_farm, intel_store, weapon_store]
 
 
-def show_choices(player):
-    print(38 * "-")
-    print("- {} credits --- {} heat --- {} intel -".format(player.money, player.heat, player.intel))
-    print('Inventory:', end='')
-    for item in player.inventory:
-        # print(player.inventory[item]['amount'], end='')
-        ''''
-        if player.inventory[item]['amount'] > 1:
-            print(' {}'.format(item['amount']), item + ',', end='')
-        else:
-            print(' ', item + ',', end='')
-        '''
-        print(' ', item + ',', end='')
-
-    print()
-    print(38 * "-")
-    print("1. Rob a store")
-    print("2. Lay low")
-    print("3. Gain intel")
-    print("4. Attack server farm")
-    print("5. Intel Store")
-    print("6. Weapon Store")
-    print("7. Exit")
-    print(38 * "-")
-
-
 def main_menu():
-    loop = True
-    while loop:
-        print(15 * "-", " Menu ", 15 * "-")
-        print("1. Play Game")
-        print("2. Options")
-        print("3. Exit")
-        print(38 * "-")
-        try:
-            choice = int(input("Enter your choice [1-3]: "))
+    game_loop = True
 
-            if choice == 1:
-                main_game(setup())
-            elif choice == 2:
-                print("Chosen 2\n")
-            elif choice == 3:
-                print("Exit\n")
-                loop = False
-            else:
-                raise ValueError("Only type numbers to choose\nPress any key to try again\n")
+    main_menu_options = {
+        "Play Game": main_game,
+        "Options": print("Not Done"),
+        "Exit": quit
+    }
 
-        except ValueError:
-            print("Only type numbers [1-3] to choose\n")
+    main_menu_object = Menu(main_menu_options)
+
+    while game_loop:
+        main_menu_object.show_options()
 
 
-def main_game(setup_list):
+def main_game():
     # TODO: ADD GEAR, MERCS
     # TODO: ADD Name Choice
+
+    setup_list = setup()
 
     player = setup_list[0]
     server_farm = setup_list[1]
     intel_store = setup_list[2]
     weapon_store = setup_list[3]
+
+    main_game_options = {
+        "Rob a store": player.rob_a_store,
+        "Lay low": player.lay_low,
+        "Gain Intel": player.gain_intel,
+        "Attack Server Farm": player.attack_server_farm,
+        "Intel Store": intel_store.show_intel,
+        "Weapon Store": weapon_store.show_weapons,
+        "Exit": quit
+    }
+
+    main_game_menu = MainGameMenu(main_game_options, player)
 
     game_loop = True
     while game_loop:
@@ -106,46 +79,8 @@ def main_game(setup_list):
 
         input("Continue...")
 
-        show_choices(player)
-
-        try:
-            game_choice = int(input("Enter your choice [1-7]:"))
-
-            # ROB A STORE
-            if game_choice == 1:
-                player.rob_a_store()
-
-            # LAY LOW
-            elif game_choice == 2:
-                # TODO: Write dynamic store_list
-                store_list = [weapon_store, intel_store]
-                player.lay_low(store_list)
-
-            # GAIN INTEL
-            elif game_choice == 3:
-                player.gain_intel()
-
-            # ATTACK SERVER FARM
-            elif game_choice == 4:
-                player.attack_server_farm(server_farm)
-
-            # INTEL STORE
-            elif game_choice == 5:
-                player.go_shopping(intel_store)
-
-            # WEAPON STORE
-            elif game_choice == 6:
-                player.go_shopping(weapon_store)
-
-            # EXIT
-            elif game_choice == 7:
-                game_loop = False
-
-            else:
-                raise ValueError("Only type numbers")
-
-        except ValueError:
-            print("ValueError: Only use numbers")
+        main_game_menu.refresh_info()
+        main_game_menu.show_options()
 
 
 def main():

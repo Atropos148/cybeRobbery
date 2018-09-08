@@ -64,7 +64,7 @@ class Player:
 
     def attack_server_farm(self, server_farm):
         server_farm.server_security += (self.heat / 2)
-
+        print(server_farm.name)
         # if the attack is successful
         # TODO: Add READY LEVEL
         if (server_farm.server_security - self.intel) <= 50:
@@ -95,86 +95,11 @@ class Player:
             print("Scraps of data you collected were sold on black market for {} credits.".format(stolen_money))
             print("Corp is breathing down your neck. Gain {} heat.".format(heat_change))
 
-    def go_shopping(self, store):
-
-        store_dict = store.build_id_dict()
-        store.show_items(store_dict, store.items_dict)
-        store.sell_items(store_dict, store.items_dict, self)
-
 
 class ServerFarm:
-    def __init__(self, server_security):
+    def __init__(self, server_security, name):
         self.server_security = server_security
-
-
-class Store:
-    def __init__(self, items_dict_start, type_of_store):
-        self.items_dict_start = items_dict_start
-        self.type_of_store = type_of_store
-        self.items_dict = copy.deepcopy(items_dict_start)
-
-    def build_id_dict(self):
-
-        id_dict = {}
-        id_dict.clear()
-        for i, item in enumerate(self.items_dict, 1):
-            id_dict[i] = item
-        return id_dict
-
-    @staticmethod
-    def show_items(id_dict, items_dict):
-        for item in id_dict:
-            curr_item = items_dict[id_dict[item]]
-
-            # amount_check = curr_item['amount'] if curr_item['amount'] > 1 else 'a'
-            print('{}. Buy {} for {}'.format(
-                item, curr_item.name, curr_item.price))
-
-        print('9. Leave')
-
-    def sell_items(self, id_dict, items_dict, player):
-        choice = int(input('What do  you want to buy?(1-9) '))
-        id_dict_check = []
-        for item in id_dict:
-            id_dict_check.append(item)
-
-        try:
-            if choice in id_dict_check:
-
-                # in a list of all items in shop, choose the item player selected
-                chosen_item = items_dict[id_dict[choice]]
-
-                if player.money < int(chosen_item.price):
-                    print("You don't have enough money to buy {}".format(chosen_item.name))
-
-                else:
-                    if self.type_of_store == 'intel':
-                        player.money -= int(chosen_item.price)
-                        player.intel += int(chosen_item.intel_amount)
-                        # print('You bought {}'.format(chosen_item['name']))
-
-                    elif self.type_of_store == 'weapon':
-                        player.money -= int(chosen_item.price)
-                        """"
-                        if chosen_item['name'] in player.inventory:
-                            # TODO: Fix KeyError
-                            player.inventory[chosen_item['amount']] += 1
-
-                        else:
-                            player.inventory[chosen_item['name']] = chosen_item
-                        """
-                        player.inventory[chosen_item.name] = chosen_item
-
-                        # print('You bought {}'.format(chosen_item['name']))
-                        del items_dict[id_dict[choice]]
-
-                    print('You bought {}'.format(chosen_item.name))
-
-            else:
-                print('Wrong numbesdadasdr')
-
-        except KeyError:
-            print(KeyError)
+        self.name = name
 
 
 class Item:
@@ -199,3 +124,131 @@ class Intel(Item):
     def __init__(self, name, price, intel_amount):
         Item.__init__(self, name, price)
         self.intel_amount = intel_amount
+
+
+class Menu:
+    def __init__(self, options):
+        self.options = options
+
+    def choose_option(self, options_dict):
+        try:
+            choice = int(input("Enter your choice: "))
+            if choice in options_dict:
+                options_dict[choice]()
+            else:
+                raise ValueError("Only type numbers to choose")
+
+        except ValueError:
+            print("Invalid number, please choose again")
+
+    def show_options(self):
+        index_dict = {}
+        print(15 * "-", " Menu ", 15 * "-")
+        for index, option in enumerate(self.options):
+            connected_function = self.options[option]
+
+            print(str(index + 1) + ". " + str(option))
+            index_dict[index + 1] = connected_function
+
+        print(38 * "-")
+        self.choose_option(index_dict)
+
+
+class MainGameMenu(Menu):
+    def __init__(self, options, player):
+        Menu.__init__(self, options)
+        self.player = player
+
+    def refresh_info(self):
+        print(38 * "-")
+        print("- {} credits --- {} heat --- {} intel -".format(self.player.money, self.player.heat, self.player.intel))
+        print('Inventory: ', end='')
+        for item in self.player.inventory:
+            print(str(self.player.inventory[item].name) + ', ', end='')
+        print('\n')
+
+    def show_options(self):
+        index_dict = {}
+
+        for index, option in enumerate(self.options):
+            connected_function = self.options[option]
+
+            print(str(index + 1) + ". " + option)
+            index_dict[index + 1] = connected_function
+
+        print(38 * "-")
+        self.choose_option(index_dict)
+
+
+class WeaponStore(Menu):
+    def __init__(self, items_dict_start, player):
+        items_dict = items_dict_start
+        self.options = items_dict
+        Menu.__init__(self, self.options)
+        self.player = player
+
+    def choose_weapon(self, options_dict, player):
+        try:
+
+            choice = int(input("What are you buying?: "))
+            chosen_gun = options_dict[choice]
+            if choice in options_dict:
+                if player.money >= chosen_gun.price:
+                    player.money -= int(chosen_gun.price)
+                    player.inventory[chosen_gun.name] = chosen_gun
+                else:
+                    print("You don't have enough money to buy " + chosen_gun.name + "!")
+
+            else:
+                raise ValueError("Only type numbers to choose")
+
+        except ValueError:
+            print("Invalid number, please choose again")
+
+    def show_weapons(self):
+        index_dict = {}
+        print(15 * "-", " Menu ", 15 * "-")
+        for index, option in enumerate(self.options):
+            connected_gun = self.options[option]
+
+            print(str(index + 1) + ". " + str(self.options[option].name))
+            index_dict[index + 1] = connected_gun
+
+        print(38 * "-")
+        self.choose_weapon(index_dict, self.player)
+
+
+class IntelStore(Menu):
+    def __init__(self, items_dict_start, player):
+        items_dict = items_dict_start
+        self.options = items_dict
+        Menu.__init__(self, self.options)
+        self.player = player
+
+    def choose_intel(self, options_dict, player):
+        try:
+
+            choice = int(input("What are you buying?: "))
+            chosen_intel = options_dict[choice]
+            if choice in options_dict:
+                if player.money >= chosen_intel.price:
+                    player.money -= chosen_intel.price
+                    player.intel += chosen_intel.intel_amount
+
+            else:
+                raise ValueError("Only type numbers to choose")
+
+        except ValueError:
+            print("Invalid number, please choose again")
+
+    def show_intel(self):
+        index_dict = {}
+        print(15 * "-", " Menu ", 15 * "-")
+        for index, option in enumerate(self.options):
+            connected_intel = self.options[option]
+
+            print(str(index + 1) + ". " + str(self.options[option].name))
+            index_dict[index + 1] = connected_intel
+
+        print(38 * "-")
+        self.choose_intel(index_dict, self.player)
