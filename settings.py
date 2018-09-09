@@ -31,8 +31,8 @@ class Player:
         stolen_money_check = stolen_money if stolen_money > 0 else 'no'
         print("You got {} credits.".format(stolen_money_check))
 
-    def lay_low(self, store_list):
-        self.restock_stores(store_list)
+    def lay_low(self):
+        # self.restock_stores(store_list)
 
         heat_change = randint(3, 15)
 
@@ -62,20 +62,27 @@ class Player:
         intel_change_check = intel_gain if intel_gain > 0 else 'no'
         print("Also, you gained {} intel.".format(intel_change_check))
 
-    def attack_server_farm(self, server_farm):
-        server_farm.server_security += (self.heat / 2)
-        print(server_farm.name)
+
+class ServerFarm:
+    def __init__(self, server_security, name, player):
+        self.server_security = server_security
+        self.name = name
+        self.player = player
+
+    def server_farm_assault(self):
+        self.server_security += (self.player.heat / 2)
+        print(self.name)
         # if the attack is successful
         # TODO: Add READY LEVEL
-        if (server_farm.server_security - self.intel) <= 50:
+        if (self.server_security - self.player.intel) <= 50:
 
             stolen_money = randint(800, 5000)
             heat_change = randint(1, 15)
 
-            self.heat += heat_change
-            self.money += stolen_money
+            self.player.heat += heat_change
+            self.player.money += stolen_money
 
-            self.intel = 0
+            self.player.intel = 0
 
             print("You got around all security.")
             print("The stolen data was sold for {} credits.".format(stolen_money))
@@ -86,20 +93,14 @@ class Player:
             stolen_money = randint(100, 600)
             heat_change = randint(10, 25)
 
-            self.heat += heat_change
-            self.money += stolen_money
+            self.player.heat += heat_change
+            self.player.money += stolen_money
 
-            self.intel = 0
+            self.player.intel = 0
 
             print("You barely got out of there.")
             print("Scraps of data you collected were sold on black market for {} credits.".format(stolen_money))
             print("Corp is breathing down your neck. Gain {} heat.".format(heat_change))
-
-
-class ServerFarm:
-    def __init__(self, server_security, name):
-        self.server_security = server_security
-        self.name = name
 
 
 class Item:
@@ -158,6 +159,9 @@ class MainGameMenu(Menu):
     def __init__(self, options, player):
         Menu.__init__(self, options)
         self.player = player
+
+    def refresh_info_text(self):
+        return ("- {} credits --- {} heat --- {} intel -".format(self.player.money, self.player.heat, self.player.intel))
 
     def refresh_info(self):
         print(38 * "-")
