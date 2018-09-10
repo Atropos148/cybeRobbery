@@ -55,18 +55,28 @@ def text_objects(text, font, color):
     return text_surface, text_surface.get_rect()
 
 
-def button(msg, x, y, width, height, color_normal, color_hover, action):
+def button(msg, x, y, width, height, color_normal, color_hover, action, description):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
     if x + width > mouse[0] > x and y + height > mouse[1] > y:
+        pygame.draw.rect(game_display, green, (x - 5, y - 5, width + 10, height + 10))
         pygame.draw.rect(game_display, color_hover, (x, y, width, height))
+
+        pygame.draw.rect(game_display, green, (x - (x / 2), y + ((height / 2) - 7), 10, 10))
+
+        color = green
+        small_text = pygame.font.Font('freesansbold.ttf', 20)
+        text_surface, text_rect = text_objects(description, small_text, color)
+        text_rect.center = ((x + (2 * width)) , (y + (height / 2)))
+        game_display.blit(text_surface, text_rect)
+
         if click[0] == 1 and action is not None:
             action()
     else:
         pygame.draw.rect(game_display, color_normal, (x, y, width, height))
 
-    color = black
+    color = green
     small_text = pygame.font.Font('freesansbold.ttf', 20)
     text_surface, text_rect = text_objects(msg, small_text, color)
     text_rect.center = ((x + (width / 2)), (y + (height / 2)))
@@ -82,9 +92,9 @@ def main_menu():
     game_loop = True
 
     main_menu_options = {
-        "Play Game": main_game,
-        "Options": print("Not Done"),
-        "Exit": quit_game
+        "Play Game": [main_game, 'Start the game'],
+        # "Options": print("Not Done"),
+        "Exit": [quit_game, 'Quit the game']
     }
 
     main_menu_object = Menu(main_menu_options)
@@ -97,13 +107,13 @@ def main_menu():
         game_display.fill(black)
 
         large_text = pygame.font.Font('freesansbold.ttf', 64)
-        text_surface, text_rect = text_objects("cybeRobbery", large_text, green)
+        text_surface, text_rect = text_objects("cybeRobbery", large_text, black)
         text_rect.center = ((display_width / 2), (display_height / 2))
         game_display.blit(text_surface, text_rect)
 
         y = 50
         for option in main_menu_options:
-            button(option, 50, y, 200, 50, green, green_hover, main_menu_options[option])
+            button(option, 50, y, 200, 50, black, black, main_menu_options[option][0], main_menu_options[option][1])
             y += 70
 
         pygame.display.update()
@@ -124,13 +134,13 @@ def main_game():
     weapon_store = setup_list[3]
 
     main_game_options = {
-        "Rob a store": player.rob_a_store,
-        "Lay low": player.lay_low,
-        "Gain Intel": player.gain_intel,
-        "Attack Server Farm": server_farm.server_farm_assault,
-        "Intel Store": intel_store.show_intel,
-        "Weapon Store": weapon_store.show_weapons,
-        "Exit": quit
+        "Rob a store": [player.rob_a_store, 'Knock over a store to get Money'],
+        "Lay low": [player.lay_low, 'Get rid of Heat by not doing much'],
+        "Gain Intel": [player.gain_intel, 'Spend time by spying in real and cyber'],
+        "Attack Server Farm": [server_farm.server_farm_assault, 'Launch an Assault'],
+        "Intel Store": [intel_store.show_intel, 'Buy some info on your enemies'],
+        "Weapon Store": [weapon_store.show_weapons, 'Get some guns off the books'],
+        "Exit": [quit, 'Quit the game']
     }
 
     main_game_menu = MainGameMenu(main_game_options, player)
@@ -161,7 +171,7 @@ def main_game():
 
         y = 50
         for option in main_game_options:
-            button(option, 50, y, 200, 50, green, green_hover, main_game_options[option])
+            button(option, 50, y, 200, 50, black, black, main_game_options[option][0], main_game_options[option][1])
             y += 70
 
         pygame.display.update()
