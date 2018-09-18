@@ -55,23 +55,21 @@ def text_objects(text, font, color):
     return text_surface, text_surface.get_rect()
 
 
-def button(msg, x, y, width, height, color_normal, color_hover, action, description):
+def button(msg, x, y, width, height, color_normal, color_hover, action, description, click):
     mouse = pygame.mouse.get_pos()
-    click = pygame.mouse.get_pressed()
+    # click = pygame.mouse.get_pressed()
 
     if x + width > mouse[0] > x and y + height > mouse[1] > y:
         pygame.draw.rect(game_display, green, (x - 5, y - 5, width + 10, height + 10))
         pygame.draw.rect(game_display, color_hover, (x, y, width, height))
 
-        pygame.draw.rect(game_display, green, (x - (x / 2), y + ((height / 2) - 7), 10, 10))
-
         color = green
         small_text = pygame.font.Font('freesansbold.ttf', 20)
         text_surface, text_rect = text_objects(description, small_text, color)
-        text_rect.center = ((x + (2 * width)) , (y + (height / 2)))
+        text_rect.center = ((display_width/2 , display_height-30))
         game_display.blit(text_surface, text_rect)
 
-        if click[0] == 1 and action is not None:
+        if click == True and action is not None:
             action()
     else:
         pygame.draw.rect(game_display, color_normal, (x, y, width, height))
@@ -99,11 +97,13 @@ def main_menu():
 
     main_menu_object = Menu(main_menu_options)
 
+    click = False
     while game_loop:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
-
+            if event.type == pygame.MOUSEBUTTONUP:
+                click = True
         game_display.fill(black)
 
         large_text = pygame.font.Font('freesansbold.ttf', 64)
@@ -113,13 +113,11 @@ def main_menu():
 
         y = 50
         for option in main_menu_options:
-            button(option, 50, y, 200, 50, black, black, main_menu_options[option][0], main_menu_options[option][1])
+            button(option, 50, y, 200, 50, black, black, main_menu_options[option][0], main_menu_options[option][1], click)
             y += 70
 
         pygame.display.update()
         clock.tick(60)
-
-        # main_menu_object.show_options()
 
 
 def main_game():
@@ -140,21 +138,24 @@ def main_game():
         "Attack Server Farm": [server_farm.server_farm_assault, 'Launch an Assault'],
         "Intel Store": [intel_store.show_intel, 'Buy some info on your enemies'],
         "Weapon Store": [weapon_store.show_weapons, 'Get some guns off the books'],
-        "Exit": [quit, 'Quit the game']
+        "Exit": [main_menu, 'Quit the game']
     }
 
     main_game_menu = MainGameMenu(main_game_options, player)
 
     game_loop = True
+
     while game_loop:
 
         large_text = pygame.font.Font('freesansbold.ttf', 64)
         small_text = pygame.font.Font('freesansbold.ttf', 16)
 
+        click = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
-
+            if event.type == pygame.MOUSEBUTTONUP:
+                click = True
         if player.heat > 100:
             ending_text = "You attracted too much heat. AugCops kicked down your door. Have fun in prison!"
             text_surface, text_rect = text_objects(ending_text, small_text, green)
@@ -171,7 +172,7 @@ def main_game():
 
         y = 50
         for option in main_game_options:
-            button(option, 50, y, 200, 50, black, black, main_game_options[option][0], main_game_options[option][1])
+            button(option, 50, y, 200, 50, black, black, main_game_options[option][0], main_game_options[option][1], click)
             y += 70
 
         pygame.display.update()

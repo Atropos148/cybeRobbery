@@ -161,7 +161,7 @@ class MainGameMenu(Menu):
         self.player = player
 
     def refresh_info_text(self):
-        return ("- {} credits --- {} heat --- {} intel -".format(self.player.money, self.player.heat, self.player.intel))
+        return ("- Name: {} --- Credits: {} --- Heat: {} --- Intel:{} -".format(self.player.name, self.player.money, self.player.heat, self.player.intel))
 
     def refresh_info(self):
         print(38 * "-")
