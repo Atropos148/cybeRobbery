@@ -10,6 +10,8 @@ display_width = 800
 display_height = 600
 
 black = (0, 0, 0)
+green = (0, 255, 0)
+'''
 white = (255, 255, 255)
 
 red = (255, 0, 0)
@@ -18,9 +20,11 @@ blue = (0, 0, 255)
 
 green_hover = (0, 200, 0)
 red_hover = (200, 0, 0)
+'''
 
 pygame.init()
 clock = pygame.time.Clock()
+
 game_display = pygame.display.set_mode((display_width, display_height))
 
 
@@ -55,32 +59,6 @@ def text_objects(text, font, color):
     return text_surface, text_surface.get_rect()
 
 
-def button(msg, x, y, width, height, color_normal, color_hover, action, description, click):
-    mouse = pygame.mouse.get_pos()
-    # click = pygame.mouse.get_pressed()
-
-    if x + width > mouse[0] > x and y + height > mouse[1] > y:
-        pygame.draw.rect(game_display, green, (x - 5, y - 5, width + 10, height + 10))
-        pygame.draw.rect(game_display, color_hover, (x, y, width, height))
-
-        color = green
-        small_text = pygame.font.Font('freesansbold.ttf', 20)
-        text_surface, text_rect = text_objects(description, small_text, color)
-        text_rect.center = ((display_width/2 , display_height-30))
-        game_display.blit(text_surface, text_rect)
-
-        if click == True and action is not None:
-            action()
-    else:
-        pygame.draw.rect(game_display, color_normal, (x, y, width, height))
-
-    color = green
-    small_text = pygame.font.Font('freesansbold.ttf', 20)
-    text_surface, text_rect = text_objects(msg, small_text, color)
-    text_rect.center = ((x + (width / 2)), (y + (height / 2)))
-    game_display.blit(text_surface, text_rect)
-
-
 def quit_game():
     pygame.quit()
     quit()
@@ -104,17 +82,16 @@ def main_menu():
                 quit_game()
             if event.type == pygame.MOUSEBUTTONUP:
                 click = True
-        game_display.fill(black)
 
+        '''
         large_text = pygame.font.Font('freesansbold.ttf', 64)
         text_surface, text_rect = text_objects("cybeRobbery", large_text, black)
         text_rect.center = ((display_width / 2), (display_height / 2))
         game_display.blit(text_surface, text_rect)
+        '''
 
-        y = 50
-        for option in main_menu_options:
-            button(option, 50, y, 200, 50, black, black, main_menu_options[option][0], main_menu_options[option][1], click)
-            y += 70
+        main_menu_object.show_menu_name()
+        main_menu_object.show_menu_options(click)
 
         pygame.display.update()
         clock.tick(60)
@@ -136,8 +113,8 @@ def main_game():
         "Lay low": [player.lay_low, 'Get rid of Heat by not doing much'],
         "Gain Intel": [player.gain_intel, 'Spend time by spying in real and cyber'],
         "Attack Server Farm": [server_farm.server_farm_assault, 'Launch an Assault'],
-        "Intel Store": [intel_store.show_intel, 'Buy some info on your enemies'],
-        "Weapon Store": [weapon_store.show_weapons, 'Get some guns off the books'],
+        "Intel Store": [intel_store.show_menu_options, 'Buy some info on your enemies'],
+        "Weapon Store": [weapon_store.show_menu_options, 'Get some guns off the books'],
         "Exit": [main_menu, 'Quit the game']
     }
 
@@ -156,24 +133,35 @@ def main_game():
                 quit_game()
             if event.type == pygame.MOUSEBUTTONUP:
                 click = True
+
+        # GAME OVER check
         if player.heat > 100:
+            end_game_options = {
+                "Main Menu": [main_menu, 'Go back to Menu'],
+            }
+
+            game_display.fill(black)
+
+            end_game_menu = Menu(end_game_options)
+            end_game_menu.show_menu_options(click)
+
+            game_display.fill(black)
+
             ending_text = "You attracted too much heat. AugCops kicked down your door. Have fun in prison!"
             text_surface, text_rect = text_objects(ending_text, small_text, green)
             text_rect.center = ((display_width / 2), (display_height / 2))
             game_display.blit(text_surface, text_rect)
-            break
+            # break
 
         game_display.fill(black)
 
         info_text = main_game_menu.refresh_info_text()
+
         text_surface, text_rect = text_objects(info_text, small_text, green)
         text_rect.center = ((display_width / 2), 24)
         game_display.blit(text_surface, text_rect)
 
-        y = 50
-        for option in main_game_options:
-            button(option, 50, y, 200, 50, black, black, main_game_options[option][0], main_game_options[option][1], click)
-            y += 70
+        main_game_menu.show_menu_options(click)
 
         pygame.display.update()
         clock.tick(60)
