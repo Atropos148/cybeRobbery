@@ -2,7 +2,8 @@
 # cybeRobbery - game about robbing corps blind
 # made by @atropos148
 
-import pygame
+# import pygame
+import time
 
 from settings import *
 
@@ -39,19 +40,19 @@ def setup():
     )
 
     server_farm = ServerFarm(100, 'Sweigart Consortium', player)
-    intel_big = Intel('E-Mails', 400, 30)
+    intel_big = Intel('E-Mails', 400, 30, "Bunch of internal emails with passwords")
 
     intel_dict_start = {0: intel_big}
     intel_store = IntelStore(intel_dict_start, player)
 
-    glock = Weapon('Glock 17', 200, 3)
-    shotgun = Weapon('Remington 870', 450, 6)
-    go_back = Item('Go Back', 0)
+    glock = Weapon('Glock 17', 200, 3, "Small Handgun")
+    shotgun = Weapon('Remington 870', 450, 6, "Kill everyone with this")
+    go_back = Item('Go Back', 0, "Return")
     items_dict_start = {0: glock, 1: shotgun, 9: go_back}
 
     weapon_store = WeaponStore(items_dict_start, player)
 
-    return [player, server_farm, intel_store, weapon_store]
+    return player, server_farm, intel_store, weapon_store
 
 
 def text_objects(text, font, color):
@@ -101,12 +102,9 @@ def main_game():
     # TODO: ADD GEAR, MERCS
     # TODO: ADD Name Choice
 
-    setup_list = setup()
+    player, server_farm, intel_store, weapon_store = setup()
 
-    player = setup_list[0]
-    server_farm = setup_list[1]
-    intel_store = setup_list[2]
-    weapon_store = setup_list[3]
+    weapon_store_object = (weapon_store.show_weapons, False)
 
     main_game_options = {
         "Rob a store": [player.rob_a_store, 'Knock over a store to get Money'],
@@ -114,17 +112,17 @@ def main_game():
         "Gain Intel": [player.gain_intel, 'Spend time by spying in real and cyber'],
         "Attack Server Farm": [server_farm.server_farm_assault, 'Launch an Assault'],
         "Intel Store": [intel_store.show_menu_options, 'Buy some info on your enemies'],
-        "Weapon Store": [weapon_store.show_menu_options, 'Get some guns off the books'],
+        "Weapon Store": [weapon_store_object, 'Get some guns off the books'],
         "Exit": [main_menu, 'Quit the game']
     }
 
-    main_game_menu = MainGameMenu(main_game_options, player)
+    main_game_menu = MainGameMenu(main_game_options)
 
     game_loop = True
 
     while game_loop:
 
-        large_text = pygame.font.Font('freesansbold.ttf', 64)
+        # large_text = pygame.font.Font('freesansbold.ttf', 64)
         small_text = pygame.font.Font('freesansbold.ttf', 16)
 
         click = False
@@ -151,16 +149,19 @@ def main_game():
             text_surface, text_rect = text_objects(ending_text, small_text, green)
             text_rect.center = ((display_width / 2), (display_height / 2))
             game_display.blit(text_surface, text_rect)
-            # break
+            pygame.display.update()
+            time.sleep(1)
+            main_menu()
 
         game_display.fill(black)
 
-        info_text = main_game_menu.refresh_info_text()
+        info_text = player.refresh_info_text()
 
         text_surface, text_rect = text_objects(info_text, small_text, green)
         text_rect.center = ((display_width / 2), 24)
         game_display.blit(text_surface, text_rect)
 
+        weapon_store.show_weapons(click)
         main_game_menu.show_menu_options(click)
 
         pygame.display.update()
