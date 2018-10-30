@@ -36,21 +36,21 @@ def setup():
         money=650,
         heat=0,
         intel=1,
-        inventory={}
+        inventory=[]
     )
 
     server_farm = ServerFarm(100, 'Sweigart Consortium', player)
     intel_big = Intel('E-Mails', 400, 30, "Bunch of internal emails with passwords")
 
     intel_dict_start = {0: intel_big}
-    intel_store = IntelStore(intel_dict_start, player)
+    intel_store = IntelStore(intel_dict_start, player, False)
 
     glock = Weapon('Glock 17', 200, 3, "Small Handgun")
     shotgun = Weapon('Remington 870', 450, 6, "Kill everyone with this")
-    go_back = Item('Go Back', 0, "Return")
-    items_dict_start = {0: glock, 1: shotgun, 9: go_back}
+    # go_back = Item('Go Back', 0, "Return")
+    items_dict_start = {0: glock, 1: shotgun}
 
-    weapon_store = WeaponStore(items_dict_start, player)
+    weapon_store = WeaponStore(items_dict_start, player, False)
 
     return player, server_farm, intel_store, weapon_store
 
@@ -104,15 +104,18 @@ def main_game():
 
     player, server_farm, intel_store, weapon_store = setup()
 
-    weapon_store_object = (weapon_store.show_weapons, False)
+    player.change_name("Change Me")
+
+    # Tuples can pass arguments in this bit of code
+    # weapon_store_object = (weapon_store.open_store, False)
 
     main_game_options = {
         "Rob a store": [player.rob_a_store, 'Knock over a store to get Money'],
         "Lay low": [player.lay_low, 'Get rid of Heat by not doing much'],
         "Gain Intel": [player.gain_intel, 'Spend time by spying in real and cyber'],
         "Attack Server Farm": [server_farm.server_farm_assault, 'Launch an Assault'],
-        "Intel Store": [intel_store.show_menu_options, 'Buy some info on your enemies'],
-        "Weapon Store": [weapon_store_object, 'Get some guns off the books'],
+        "Intel Store": [intel_store.open_store, 'Buy some info on your enemies'],
+        "Weapon Store": [weapon_store.open_store, 'Get some guns off the books'],
         "Exit": [main_menu, 'Quit the game']
     }
 
@@ -155,13 +158,24 @@ def main_game():
 
         game_display.fill(black)
 
-        info_text = player.refresh_info_text()
+        info_text_main = player.refresh_info_text()[0]
+        info_text_inventory = player.refresh_info_text()[1]
 
-        text_surface, text_rect = text_objects(info_text, small_text, green)
-        text_rect.center = ((display_width / 2), 24)
+        # Money and Heat
+        text_surface, text_rect = text_objects(info_text_main, small_text, green)
+        text_rect.center = ((display_width / 2), 25)
         game_display.blit(text_surface, text_rect)
 
-        weapon_store.show_weapons(click)
+        # Inventory
+        text_surface, text_rect = text_objects(info_text_inventory, small_text, green)
+        text_rect.center = ((display_width / 2), 45)
+        game_display.blit(text_surface, text_rect)
+
+        if weapon_store.store_open is True:
+            weapon_store.show_weapons(click)
+        elif intel_store.store_open is True:
+            intel_store.show_intel(click)
+
         main_game_menu.show_menu_options(click)
 
         pygame.display.update()

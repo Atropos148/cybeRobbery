@@ -1,7 +1,8 @@
 from random import randint
 import copy
 import pygame
-import types
+# import types
+
 
 class Player:
     def __init__(self, name, money, heat, intel, inventory):
@@ -10,6 +11,17 @@ class Player:
         self.heat = heat
         self.intel = intel
         self.inventory = inventory
+
+    def buy_item(self, item):
+        if self.money >= item.price:
+            self.money -= item.price
+            if type(item) is Weapon:
+                self.inventory.append(item)
+            elif type(item) is Intel:
+                self.intel += item.intel_amount
+
+    def change_name(self, name):
+        self.name = name
 
     @staticmethod
     def restock_stores(store_list):
@@ -70,8 +82,13 @@ class Player:
         # print("Also, you gained {} intel.".format(intel_change_check))
 
     def refresh_info_text(self):
-        return ("- Name: {} --- Credits: {} --- Heat: {} --- Intel:{} -".format(
-            self.name, self.money, self.heat, self.intel))
+        item_name_list = []
+        for item in self.inventory:
+            item_name_list.append(item.name)
+
+        return (("- Name: {} --- Credits: {} --- Heat: {} --- Intel:{} -".format(
+            self.name, self.money, self.heat, self.intel),
+                 ("- Inventory: {} -".format(item_name_list))))
 
 
 class ServerFarm:
@@ -157,6 +174,8 @@ class Menu:
 
         self.game_display = pygame.display.set_mode((self.display_width, self.display_height))
 
+        self.button_starting_y = 70
+
     @staticmethod
     def text_objects(text, font, color):
         text_surface = font.render(text, True, color)
@@ -167,9 +186,11 @@ class Menu:
         # click = pygame.mouse.get_pressed()
 
         if x + width > mouse[0] > x and y + height > mouse[1] > y:
+            # OnHover mouse position check
             pygame.draw.rect(self.game_display, self.green, (x - 5, y - 5, width + 10, height + 10))
             pygame.draw.rect(self.game_display, color_hover, (x, y, width, height))
 
+            # OnHover description text
             color = self.green
             small_text = pygame.font.Font('freesansbold.ttf', 20)
             text_surface, text_rect = self.text_objects(description, small_text, color)
@@ -181,7 +202,6 @@ class Menu:
                     action[0](action[1])
                 else:
                     action()
-
         else:
             pygame.draw.rect(self.game_display, color_normal, (x, y, width, height))
 
@@ -192,7 +212,7 @@ class Menu:
         self.game_display.blit(text_surface, text_rect)
 
     def show_menu_options(self, click_state):
-        y = 50
+        y = self.button_starting_y
         for option in self.options:
             # option[0] is first letter of key in the options dictionary, key is a string
             action = self.options[option][0]
@@ -215,23 +235,54 @@ class MainGameMenu(Menu):
 
 
 class WeaponStore(Menu):
-    def __init__(self, items_dict_start, player):
+    def __init__(self, items_dict_start, player, store_open):
         items_dict = items_dict_start
         self.options = items_dict
         Menu.__init__(self, self.options)
         self.player = player
+        self.store_open = store_open
 
     def show_weapons(self, click_state):
-        y = 50
+        y = self.button_starting_y
         for weapon in self.options:
             weapon = self.options[weapon]
-            print(weapon.description)
-            self.button(weapon.name, 300, y, 200, 50, self.black, self.black, "test2", weapon.description, click_state)
+            player_buying = (self.player.buy_item, weapon)
+            self.button(weapon.name, 300, y, 200, 50, self.black, self.black, player_buying,
+                        weapon.description, click_state)
             y += 70
 
+    def open_store(self):
+        if self.store_open is True:
+            self.close_store()
+        else:
+            self.store_open = True
+
+    def close_store(self):
+        self.store_open = False
+
+
 class IntelStore(Menu):
-    def __init__(self, items_dict_start, player):
+    def __init__(self, items_dict_start, player, store_open):
         items_dict = items_dict_start
         self.options = items_dict
         Menu.__init__(self, self.options)
         self.player = player
+        self.store_open = store_open
+
+    def show_intel(self, click_state):
+        y = self.button_starting_y
+        for intel in self.options:
+            intel = self.options[intel]
+            player_buying = (self.player.buy_item, intel)
+            self.button(intel.name, 300, y, 200, 50, self.black, self.black, player_buying,
+                        intel.description, click_state)
+            y += 70
+
+    def open_store(self):
+        if self.store_open is True:
+            self.close_store()
+        else:
+            self.store_open = True
+
+    def close_store(self):
+        self.store_open = False
