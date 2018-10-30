@@ -163,12 +163,12 @@ def main_game():
 
         # Money and Heat
         text_surface, text_rect = text_objects(info_text_main, small_text, green)
-        text_rect.center = ((display_width / 2), 25)
+        text_rect.center = ((display_width / 2), (display_height / 24)) # x:400, y: 25 > 800x600
         game_display.blit(text_surface, text_rect)
 
         # Inventory
         text_surface, text_rect = text_objects(info_text_inventory, small_text, green)
-        text_rect.center = ((display_width / 2), 45)
+        text_rect.center = ((display_width / 2), (display_height / 13)) # x:400, y: 45 > 800x600
         game_display.blit(text_surface, text_rect)
 
         if weapon_store.store_open is True:

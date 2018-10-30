@@ -174,16 +174,29 @@ class Menu:
 
         self.game_display = pygame.display.set_mode((self.display_width, self.display_height))
 
-        self.button_starting_y = 70
+        # 70 at 800x600
+        self.button_starting_y = self.display_height / 8.5
+
+        # 50 at 800x600
+        self.button_starting_x_main = self.display_width / 16
+
+        # 300 at 800x600
+        self.button_starting_x_sub = self.display_width / 2.7
+
+        self.button_width = 200
+        self.button_height = 50
 
     @staticmethod
     def text_objects(text, font, color):
         text_surface = font.render(text, True, color)
         return text_surface, text_surface.get_rect()
 
-    def button(self, msg, x, y, width, height, color_normal, color_hover, action, description, click):
+    def button(self, msg, x, y, color_normal, color_hover, action, description, click):
         mouse = pygame.mouse.get_pos()
         # click = pygame.mouse.get_pressed()
+
+        width = self.button_width
+        height = self.button_height
 
         if x + width > mouse[0] > x and y + height > mouse[1] > y:
             # OnHover mouse position check
@@ -213,11 +226,12 @@ class Menu:
 
     def show_menu_options(self, click_state):
         y = self.button_starting_y
+        x = self.button_starting_x_main
         for option in self.options:
             # option[0] is first letter of key in the options dictionary, key is a string
             action = self.options[option][0]
             description = self.options[option][1]
-            self.button(option, 50, y, 200, 50, self.black, self.black, action, description, click_state)
+            self.button(option, x, y, self.black, self.black, action, description, click_state)
             y += 70
 
     def show_menu_name(self):
@@ -244,10 +258,12 @@ class WeaponStore(Menu):
 
     def show_weapons(self, click_state):
         y = self.button_starting_y
+        x = self.button_starting_x_sub
+
         for weapon in self.options:
             weapon = self.options[weapon]
             player_buying = (self.player.buy_item, weapon)
-            self.button(weapon.name, 300, y, 200, 50, self.black, self.black, player_buying,
+            self.button(weapon.name, x, y, self.black, self.black, player_buying,
                         weapon.description, click_state)
             y += 70
 
@@ -271,10 +287,12 @@ class IntelStore(Menu):
 
     def show_intel(self, click_state):
         y = self.button_starting_y
+        x = self.button_starting_x_sub
+
         for intel in self.options:
             intel = self.options[intel]
             player_buying = (self.player.buy_item, intel)
-            self.button(intel.name, 300, y, 200, 50, self.black, self.black, player_buying,
+            self.button(intel.name, x, y, self.black, self.black, player_buying,
                         intel.description, click_state)
             y += 70
 
