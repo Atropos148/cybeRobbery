@@ -157,10 +157,12 @@ class Intel(Item):
 
 
 class Menu:
-    def __init__(self, options):
+    def __init__(self, options, resolution):
         self.options = options
-        self.display_width = 800
-        self.display_height = 600
+        self.display_width = resolution[0]
+        self.display_height = resolution[1]
+
+        self.resolution = resolution
 
         self.black = (0, 0, 0)
         self.white = (255, 255, 255)
@@ -175,13 +177,13 @@ class Menu:
         self.game_display = pygame.display.set_mode((self.display_width, self.display_height))
 
         # 70 at 800x600
-        self.button_starting_y = self.display_height / 8.5
+        self.button_starting_y = (self.display_height / 100) * 12
 
         # 50 at 800x600
-        self.button_starting_x_main = self.display_width / 16
+        self.button_starting_x_main = (self.display_width / 100) * 6
 
         # 300 at 800x600
-        self.button_starting_x_sub = self.display_width / 2.7
+        self.button_starting_x_sub = (self.display_width / 100) * 30
 
         self.button_width = 200
         self.button_height = 50
@@ -244,15 +246,18 @@ class Menu:
 
 
 class MainGameMenu(Menu):
-    def __init__(self, options):
-        Menu.__init__(self, options)
+    def __init__(self, options, resolution):
+        self.resolution = resolution
+        Menu.__init__(self, options, self.resolution)
 
 
 class WeaponStore(Menu):
-    def __init__(self, items_dict_start, player, store_open):
+    def __init__(self, items_dict_start, player, store_open, resolution):
         items_dict = items_dict_start
         self.options = items_dict
-        Menu.__init__(self, self.options)
+        self.resolution = resolution
+
+        Menu.__init__(self, self.options, self.resolution)
         self.player = player
         self.store_open = store_open
 
@@ -278,10 +283,12 @@ class WeaponStore(Menu):
 
 
 class IntelStore(Menu):
-    def __init__(self, items_dict_start, player, store_open):
+    def __init__(self, items_dict_start, player, store_open, resolution):
         items_dict = items_dict_start
         self.options = items_dict
-        Menu.__init__(self, self.options)
+        self.resolution = resolution
+
+        Menu.__init__(self, self.options, resolution)
         self.player = player
         self.store_open = store_open
 

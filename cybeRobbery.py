@@ -7,8 +7,16 @@ import time
 
 from settings import *
 
-display_width = 800
-display_height = 600
+resolutions_list = ((800, 600), (1280, 720), (1920, 1080))
+
+_1080p = resolutions_list[2]
+_720p = resolutions_list[1]
+_800x600 = resolutions_list[0]
+
+display_width = _720p[0]
+display_height = _720p[1]
+
+resolution = (display_width, display_height)
 
 black = (0, 0, 0)
 green = (0, 255, 0)
@@ -43,14 +51,14 @@ def setup():
     intel_big = Intel('E-Mails', 400, 30, "Bunch of internal emails with passwords")
 
     intel_dict_start = {0: intel_big}
-    intel_store = IntelStore(intel_dict_start, player, False)
+    intel_store = IntelStore(intel_dict_start, player, False, resolution)
 
     glock = Weapon('Glock 17', 200, 3, "Small Handgun")
     shotgun = Weapon('Remington 870', 450, 6, "Kill everyone with this")
     # go_back = Item('Go Back', 0, "Return")
     items_dict_start = {0: glock, 1: shotgun}
 
-    weapon_store = WeaponStore(items_dict_start, player, False)
+    weapon_store = WeaponStore(items_dict_start, player, False, resolution)
 
     return player, server_farm, intel_store, weapon_store
 
@@ -74,7 +82,7 @@ def main_menu():
         "Exit": [quit_game, 'Quit the game']
     }
 
-    main_menu_object = Menu(main_menu_options)
+    main_menu_object = Menu(main_menu_options, resolution)
 
     click = False
     while game_loop:
@@ -119,7 +127,7 @@ def main_game():
         "Exit": [main_menu, 'Quit the game']
     }
 
-    main_game_menu = MainGameMenu(main_game_options)
+    main_game_menu = MainGameMenu(main_game_options, resolution)
 
     game_loop = True
 
@@ -143,7 +151,7 @@ def main_game():
 
             game_display.fill(black)
 
-            end_game_menu = Menu(end_game_options)
+            end_game_menu = Menu(end_game_options, resolution)
             end_game_menu.show_menu_options(click)
 
             game_display.fill(black)
@@ -161,19 +169,19 @@ def main_game():
         info_text_main = player.refresh_info_text()[0]
         info_text_inventory = player.refresh_info_text()[1]
 
-        # Money and Heat
+        # Money and Heat, x:400, y: 25 > 800x600
         text_surface, text_rect = text_objects(info_text_main, small_text, green)
-        text_rect.center = ((display_width / 2), (display_height / 24)) # x:400, y: 25 > 800x600
+        text_rect.center = ((display_width / 2), ((display_height / 100) * 4))
         game_display.blit(text_surface, text_rect)
 
-        # Inventory
+        # Inventory x:400, y: 45 > 800x600
         text_surface, text_rect = text_objects(info_text_inventory, small_text, green)
-        text_rect.center = ((display_width / 2), (display_height / 13)) # x:400, y: 45 > 800x600
+        text_rect.center = ((display_width / 2), ((display_height / 100) * 7))
         game_display.blit(text_surface, text_rect)
 
         if weapon_store.store_open is True:
             weapon_store.show_weapons(click)
-        elif intel_store.store_open is True:
+        if intel_store.store_open is True:
             intel_store.show_intel(click)
 
         main_game_menu.show_menu_options(click)
