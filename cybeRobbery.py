@@ -76,11 +76,11 @@ def quit_game():
 def main_menu():
     game_loop = True
 
-    main_menu_options = {
-        "Play Game": [main_game, 'Start the game'],
+    main_menu_options = [
+        ["Play Game", main_game, 'Start the game'],
         # "Options": print("Not Done"),
-        "Exit": [quit_game, 'Quit the game']
-    }
+        ["Exit", quit_game, 'Quit the game']
+    ]
 
     main_menu_object = Menu(main_menu_options, resolution)
 
@@ -117,15 +117,15 @@ def main_game():
     # Tuples can pass arguments in this bit of code
     # weapon_store_object = (weapon_store.open_store, False)
 
-    main_game_options = {
-        "Rob a store": [player.rob_a_store, 'Knock over a store to get Money'],
-        "Lay low": [player.lay_low, 'Get rid of Heat by not doing much'],
-        "Gain Intel": [player.gain_intel, 'Spend time by spying in real and cyber'],
-        "Attack Server Farm": [server_farm.server_farm_assault, 'Launch an Assault'],
-        "Intel Store": [intel_store.open_store, 'Buy some info on your enemies'],
-        "Weapon Store": [weapon_store.open_store, 'Get some guns off the books'],
-        "Exit": [main_menu, 'Quit the game']
-    }
+    main_game_options = [
+        ["Rob a store", player.rob_a_store, 'Knock over a store to get Money'],
+        ["Lay low", player.lay_low, 'Get rid of Heat by not doing much'],
+        ["Gain Intel", player.gain_intel, 'Spend time by spying in real and cyber'],
+        ["Attack Server Farm", server_farm.server_farm_assault, 'Launch an Assault'],
+        ["Intel Store", intel_store.open_store, 'Buy some info on your enemies'],
+        ["Weapon Store", weapon_store.open_store, 'Get some guns off the books'],
+        ["Exit", main_menu, 'Quit the game']
+    ]
 
     main_game_menu = MainGameMenu(main_game_options, resolution)
 

@@ -230,10 +230,10 @@ class Menu:
         y = self.button_starting_y
         x = self.button_starting_x_main
         for option in self.options:
-            # option[0] is first letter of key in the options dictionary, key is a string
-            action = self.options[option][0]
-            description = self.options[option][1]
-            self.button(option, x, y, self.black, self.black, action, description, click_state)
+            # option[0] is the Button Text
+            action = option[1]
+            description = option[2]
+            self.button(option[0], x, y, self.black, self.black, action, description, click_state)
             y += 70
 
     def show_menu_name(self):
